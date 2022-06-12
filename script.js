@@ -1,14 +1,20 @@
+// query selectors
 const screen = document.querySelector('.calculator-screen');
-
-const updateScreen = (number) => {
-    screen.value = number;
-};
-
 const numbers = document.querySelectorAll(".number");
+const operators = document.querySelectorAll(".operator");
+const equalSign = document.querySelector('.equal-sign');
+const decimal = document.querySelector('.decimal');
+const clear = document.querySelector('.all-clear');
 
+// variable init
 let prevNumber = '';
 let calculationOperator = '';
 let currentNumber = '0';
+
+// functions
+const updateScreen = (number) => {
+    screen.value = number;
+};
 
 const inputNumber = (number) => {
     if (currentNumber === '0'){
@@ -18,13 +24,56 @@ const inputNumber = (number) => {
     }
 }
 
-const operators = document.querySelectorAll(".operator");
-
 const inputOperator = (operator) => {
-    prevNumber = currentNumber;
+    if(calculationOperator === '') {
+        prevNumber = currentNumber;
+    }
     calculationOperator = operator;
     currentNumber = '';
 }
+
+const calculate = () => {
+    let result = '';
+    switch(calculationOperator) {
+        case "+":
+        result = parseFloat(prevNumber) + parseFloat(currentNumber);
+        break;
+    case "-":
+        result = parseFloat(prevNumber) - parseFloat(currentNumber);
+        break;
+    case "*":
+        result = parseFloat(prevNumber) * parseFloat(currentNumber);
+        break;
+    case "/":
+        result = parseFloat(prevNumber) / parseFloat(currentNumber);
+        break;
+    default:
+        break;
+    }
+    currentNumber = result;
+    calculationOperator = '';
+}
+
+const clearAll = () => {
+    prevNumber = '';
+    calculationOperator = '';
+    currentNumber = '0';
+}
+
+const inputDecimal = (dot) => {
+    if(currentNumber.includes('.')) {
+        return;
+    }
+    currentNumber += dot;
+}
+
+// Event Listener
+numbers.forEach((number)=>{
+    number.addEventListener("click", (event)=>{
+        inputNumber(event.target.value);
+        updateScreen(currentNumber);
+    });
+});
 
 operators.forEach((operator) => {
     operator.addEventListener("click", (e)=>{
@@ -32,39 +81,18 @@ operators.forEach((operator) => {
     });
 });
 
-const equalSign = document.querySelector('.equal-sign');
 
 equalSign.addEventListener('click', ()=>{
     calculate();
     updateScreen(currentNumber);
 });
 
-const calculate = () => {
-    let result = '';
-    switch(calculationOperator) {
-        case "+":
-            result = parseInt(prevNumber) + parseInt(currentNumber);
-            break;
-        case "-":
-            result = parseInt(prevNumber) - parseInt(currentNumber);
-            break;
-        case "*":
-            result = parseInt(prevNumber) * parseInt(currentNumber);
-            break;
-        case "/":
-            result = parseInt(prevNumber) / parseInt(currentNumber);
-            break;
-        default:
-            break;
-    }
-    currentNumber = result;
-    calculationOperator = '';
-}
+clear.addEventListener('click', () => {
+    clearAll();
+    updateScreen(currentNumber);
+});
 
-
-numbers.forEach((number)=>{
-    number.addEventListener("click", (event)=>{
-        inputNumber(event.target.value);
-        updateScreen(currentNumber);
-    });
+decimal.addEventListener('click', (e)=>{
+    inputDecimal(e.target.value);
+    updateScreen(currentNumber);
 });
